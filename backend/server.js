@@ -3,17 +3,17 @@ const cors = require("cors");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
+const mealRoutes = require("./routes/mealRoutes");
 
 const app = express();
 
-// Connect to DB
 connectDB();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Test route
+app.use("/api/meals", mealRoutes);
+
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running" });
 });
