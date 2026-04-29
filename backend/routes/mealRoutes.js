@@ -14,6 +14,16 @@ router.post("/", async (req, res) => {
   }
 });
 
+// DELETE meal
+router.delete("/:id", async (req, res) => {
+  try {
+    await MealLog.findByIdAndDelete(req.params.id);
+    res.json({ message: "Meal deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // GET all meals
 router.get("/", async (req, res) => {
   try {

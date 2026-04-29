@@ -4,12 +4,13 @@ const mealLogSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
+  },
+  name: {
+    type: String
   },
   food: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Food",
-    required: true
   },
   quantity: {
     type: Number,
