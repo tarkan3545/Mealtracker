@@ -5,6 +5,7 @@ function App() {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [user, setUser] = useState("");
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
 
@@ -26,8 +27,8 @@ function App() {
   };
 
   const addMeal = async () => {
-    if (!name || !quantity) {
-      alert("Please enter food name and quantity");
+    if (!user || !name || !quantity) {
+      alert("Please enter user, food name and quantity");
       return;
     }
 
@@ -37,6 +38,7 @@ function App() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        user: user,
         name: name,
         quantity: Number(quantity)
       })
@@ -45,6 +47,7 @@ function App() {
     const newMeal = await res.json();
 
     setMeals([...meals, newMeal]);
+    setUser("");
     setName("");
     setQuantity("");
   };
@@ -62,12 +65,21 @@ function App() {
       <h1>Meal Tracker</h1>
       <p>Fullstack app with React, Node.js, Express and MongoDB.</p>
 
+
       <div style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          placeholder="User name"
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
+        />
+
         <input
           type="text"
           placeholder="Food name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          style={{ marginLeft: "10px" }}
         />
 
         <input
@@ -89,9 +101,10 @@ function App() {
         <p>No meals found.</p>
       ) : (
         <ul>
-          {meals.map((meal) => (
+          {Array.isArray(meals) && meals.map((meal) => (
             <li key={meal._id}>
-              Food: {meal.name || "Unknown"} | Quantity: {meal.quantity}
+              User: {meal.user || "Unknown"} | Food: {meal.name || "Unknown"} |
+              Quantity: {meal.quantity}
 
               <button
                 onClick={() => deleteMeal(meal._id)}

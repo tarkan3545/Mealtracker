@@ -27,9 +27,7 @@ router.delete("/:id", async (req, res) => {
 // GET all meals
 router.get("/", async (req, res) => {
   try {
-    const meals = await MealLog.find()
-      .populate("user")
-      .populate("food");
+    const meals = await MealLog.find();
     res.json(meals);
   } catch (error) {
     res.status(500).json({ error: error.message });

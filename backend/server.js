@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const userRoutes = require("./routes/userRoutes");
 
 const connectDB = require("./config/db");
 const mealRoutes = require("./routes/mealRoutes");
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/meals", mealRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running" });
