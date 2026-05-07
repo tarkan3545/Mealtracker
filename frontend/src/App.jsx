@@ -8,6 +8,7 @@ function App() {
   const [user, setUser] = useState("");
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     fetchMeals();
@@ -17,7 +18,7 @@ function App() {
     fetch("http://localhost:5000/api/meals")
       .then((res) => res.json())
       .then((data) => {
-        setMeals(data);
+        setMeals(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((error) => {
@@ -27,44 +28,59 @@ function App() {
   };
 
   const addMeal = async () => {
-    if (!user || !name || !quantity) {
-      alert("Please enter user, food name and quantity");
+    if (!user || !name || !quantity || !category) {
+      alert("Please enter user, food name, quantity and category");
       return;
     }
 
     const res = await fetch("http://localhost:5000/api/meals", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user: user,
-        name: name,
-        quantity: Number(quantity)
-      })
+        user,
+        name,
+        quantity: Number(quantity),
+        category,
+      }),
     });
 
     const newMeal = await res.json();
 
     setMeals([...meals, newMeal]);
+
     setUser("");
     setName("");
     setQuantity("");
+    setCategory("");
   };
 
   const deleteMeal = async (id) => {
     await fetch(`http://localhost:5000/api/meals/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
     });
 
     setMeals(meals.filter((meal) => meal._id !== id));
   };
 
-  return (
-    <main style={{ padding: "30px", fontFamily: "Arial" }}>
-      <h1>Meal Tracker</h1>
-      <p>Fullstack app with React, Node.js, Express and MongoDB.</p>
+  const totalQuantity = meals.reduce(
+    (sum, meal) => sum + Number(meal.quantity || 0),
+    0
+  );
 
+  return (
+    <main>
+      <h1>Meal Tracker</h1>
+
+      <p>
+        Fullstack app with React, Node.js, Express and MongoDB.
+      </p>
+
+      <div className="stats">
+        <p>Total meals: {meals.length}</p>
+        <p>Total quantity: {totalQuantity}</p>
+      </div>
 
       <div style={{ marginBottom: "20px" }}>
         <input
@@ -79,7 +95,6 @@ function App() {
           placeholder="Food name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          style={{ marginLeft: "10px" }}
         />
 
         <input
@@ -87,13 +102,21 @@ function App() {
           placeholder="Quantity"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
-          style={{ marginLeft: "10px" }}
         />
 
-        <button onClick={addMeal} style={{ marginLeft: "10px" }}>
+        <input
+          type="text"
+          placeholder="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+
+        <button onClick={addMeal}>
           Add Meal
         </button>
       </div>
+
+      <h2>Meal List</h2>
 
       {loading ? (
         <p>Loading meals...</p>
@@ -101,15 +124,31 @@ function App() {
         <p>No meals found.</p>
       ) : (
         <ul>
-          {Array.isArray(meals) && meals.map((meal) => (
+          {meals.map((meal) => (
             <li key={meal._id}>
-              User: {meal.user || "Unknown"} | Food: {meal.name || "Unknown"} |
-              Quantity: {meal.quantity}
+              <div className="meal-details">
+                <div>
+                  <strong>User:</strong>{" "}
+                  {meal.user || "Unknown"}
+                </div>
 
-              <button
-                onClick={() => deleteMeal(meal._id)}
-                style={{ marginLeft: "10px" }}
-              >
+                <div>
+                  <strong>Food:</strong>{" "}
+                  {meal.name || "Unknown"}
+                </div>
+
+                <div>
+                  <strong>Quantity:</strong>{" "}
+                  {meal.quantity}
+                </div>
+
+                <div>
+                  <strong>Category:</strong>{" "}
+                  {meal.category || "No category"}
+                </div>
+              </div>
+
+              <button onClick={() => deleteMeal(meal._id)}>
                 Delete
               </button>
             </li>

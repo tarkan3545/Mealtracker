@@ -13,6 +13,9 @@ const mealLogSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  category: {
+    type: String
+  },
   date: {
     type: Date,
     default: Date.now
